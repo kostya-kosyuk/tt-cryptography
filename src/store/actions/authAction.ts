@@ -2,6 +2,7 @@ export enum AuthActionTypes {
     FETCH_AUTH_REQUEST = "FETCH_AUTH_REQUEST",
     FETCH_AUTH_SUCCESS = "FETCH_AUTH_SUCCESS",
     FETCH_AUTH_FAILURE = "FETCH_AUTH_FAILURE",
+    SET_LOGIN = "SET_LOGIN",
 }
 
 interface FetchAuthRequestAction {
@@ -29,7 +30,15 @@ interface FetchAuthFailureAction {
     };
 }
 
+interface SetLoginAction {
+    type: AuthActionTypes.SET_LOGIN;
+    payload: {
+        login: string;
+    }
+}
+
 export type AuthAction =
     | FetchAuthRequestAction
     | FetchAuthSuccessAction
-    | FetchAuthFailureAction;
+    | FetchAuthFailureAction
+    | SetLoginAction;

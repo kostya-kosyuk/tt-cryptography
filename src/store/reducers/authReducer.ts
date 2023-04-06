@@ -32,6 +32,11 @@ export const authReducer = (
                 ...state,
                 ...action.payload
             };
+        case AuthActionTypes.SET_LOGIN:
+            return {
+                ...state,
+                ...action.payload
+            };
         default:
             return state;
     }

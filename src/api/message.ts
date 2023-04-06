@@ -1,4 +1,4 @@
-import { Message, newMessage } from "../types/Message";
+import { NewMessage } from "../types/Message";
 import { client } from "../utils/fetchClient";
 
 export const getMessages = () => {
@@ -7,13 +7,13 @@ export const getMessages = () => {
     return client.get(url);
 };
 
-export const createMessage = (message: newMessage) => {
+export const createMessage = (message: NewMessage) => {
     const url = '/message/create';
 
     return client.post(url, message);
 };
 
-export const updateMessage = (id: number, message: newMessage) => {
+export const patchMessage = (id: number, message: NewMessage) => {
     const url = `/message/update/${id}`;
 
     return client.patch(url, message);

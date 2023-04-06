@@ -1,36 +1,47 @@
-import { ThunkDispatch } from 'redux-thunk';
+import { ThemeProvider, createTheme } from '@mui/material';
+import Auth from './Components/Auth/Auth';
 import { AnyAction } from 'redux';
-import { useAppDispatch, useAppSelector } from './store/hooks';
-import { loginAction } from './store/asyncActions.ts/authAsyncAction';
+import { ThunkDispatch } from 'redux-thunk';
 import { RootState } from './store';
-import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from './store/hooks';
+import { AuthActionTypes } from './store/actions/authAction';
+import getCookie from './utils/getCookie';
+import { Chat } from './Components/Chat/Chat';
 
 function App() {
   const dispatch: ThunkDispatch<RootState, null, AnyAction> = useAppDispatch();
-  const isLoading = useAppSelector(state => state.auth.isLoading);
-  const login = useAppSelector(state => state.auth.login);
-  const errors = useAppSelector(state => state.auth.errorMsg);
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#2196f3',
+      },
+      secondary: {
+        main: '#f50057',
+      },
+    },
+  });
 
-  const handleLogin = () => {
-    dispatch(loginAction('front1', 'front1'));
+  const login = useAppSelector(state => state.auth.login)
+
+  if (login === '') {
+    const loginFromCookie = getCookie('login');
+
+    if (loginFromCookie) {
+      dispatch({
+        type: AuthActionTypes.SET_LOGIN,
+        payload: {
+          login: decodeURIComponent(loginFromCookie),
+      },
+      });
+    }
   }
 
-  useEffect(() => {
-    handleLogin();
-  }, []);
-
   return (
-    <>
-      {errors.map((err, i) => {
-        return (
-          <div key={i}>{err}</div>
-        );
-      })}
-      <div>{isLoading ? 'true' : 'false'}</div>
-      <div>{login ? login : 'not logged in'}</div>
-      <button >ADD</button>
-      <button>GET</button>
-    </>
+    <ThemeProvider theme={theme}>
+      {login
+        ? <Auth />
+        : <Auth />}
+    </ThemeProvider>
   );
 }
 

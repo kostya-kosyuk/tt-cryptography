@@ -1,39 +1,130 @@
-import { Container, Box, Typography, TextField, FormControlLabel, Checkbox, Button, Grid, Link } from "@mui/material";
+import { Container, Box, Typography, TextField, Button, ButtonGroup } from "@mui/material";
+import { AnyAction } from "redux";
+import { ThunkDispatch } from "redux-thunk";
+import { RootState } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { loginAction, registerAction } from "../../store/asyncActions.ts/authAsyncAction";
+import { FormEvent, useMemo, useState } from "react";
+import * as Yup from "yup";
+
+const loginValidationSchema = Yup.object().shape({
+    login: Yup.string()
+        .required("Email or Login is required")
+        .min(6, "Login must be between 6 and 64 characters")
+        .max(64, "Login must be between 6 and 64 characters")
+        .matches(/^[a-zA-Z0-9@._-]+$/, "Login may only contain letters, numbers, '@.-_'")
+});
+
+const passwordValidationSchema = Yup.object().shape({
+    password: Yup.string()
+        .required("Password is required")
+        .min(6, "Password must be between 6 and 32 characters")
+        .max(32, "Password must be between 6 and 32 characters")
+});
 
 const Auth = () => {
+    const dispatch: ThunkDispatch<RootState, null, AnyAction> = useAppDispatch();
+
+    const [login, setLogin] = useState("");
+    const [password, setPassword] = useState("");
+    const requestError = useAppSelector(state => state.auth.errorMsg);
+
+    const loginError = useMemo(() => {
+        if (login === '') {
+            return;
+        }
+
+        try {
+            loginValidationSchema.validateSync({ login}, { abortEarly: true });
+        } catch (err) {
+            if (err instanceof Yup.ValidationError) {
+                const error = err.errors[0];
+
+                return error;
+            }
+
+            return null;
+        }
+        return null;
+    }, [login]);
+
+    const passwordError = useMemo(() => {
+        if (password === '') {
+            return;
+        }
+        try {
+            passwordValidationSchema.validateSync({ password }, { abortEarly: true });
+        } catch (err) {
+            if (err instanceof Yup.ValidationError) {
+                const error = err.errors[0];
+
+                return error;
+            }
+
+            return null;
+        }
+        return null;
+    }, [password]);
+
+    const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (loginError !== null || passwordError !== null) {
+            return;
+        }
+
+        const e = event.nativeEvent as SubmitEvent;
+
+        if (!e.submitter) {
+            return;
+        }
+
+        if (e.submitter.id === 'signUp') {
+            dispatch(registerAction(login, password));
+        }
+
+        if (e.submitter.id === 'signIn') {
+            dispatch(loginAction(login, password));
+        }
+    };
+
     return (
-        <Container component="main" maxWidth="xs"
+        <Container
+            component="main"
+            maxWidth="xs"
             sx={{
-                height: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
             }}
         >
             <Box
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
                 }}
             >
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <Box component="form" onSubmit={() => {
-                    console.log('Submitted');
-                }} noValidate sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={handleFormSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required
                         fullWidth
-                        id="email"
-                        label="Email Address"
-                        name="email"
+                        id="standard-error-helper-text"
+                        label="Email or Login"
+                        name="login"
                         autoComplete="email"
                         autoFocus
+                        value={login}
+                        onChange={(e) => setLogin(e.target.value)}
+                        error={Boolean(loginError)}
+                        helperText={loginError}
                     />
                     <TextField
                         margin="normal"
@@ -42,33 +133,30 @@ const Auth = () => {
                         name="password"
                         label="Password"
                         type="password"
-                        id="password"
+                        id="standard-error-helper-text"
                         autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        error={Boolean(passwordError)}
+                        helperText={passwordError}
                     />
-                    <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
-                        label="Remember me"
-                    />
-                    <Button
-                        type="submit"
+                    <ButtonGroup
+                        disableElevation
+                        aria-label="Disabled elevation buttons"
                         fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
                     >
-                        Sign In
-                    </Button>
-                    <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
-                            </Link>
-                        </Grid>
-                        <Grid item>
-                            <Link href="#" variant="body2">
-                                {"Don't have an account? Sign Up"}
-                            </Link>
-                        </Grid>
-                    </Grid>
+                        <Button type="submit" id={'signUp'} sx={{ mt: 2, mb: 2 }}>
+                            Sign Up
+                        </Button>
+                        <Button type="submit" id={'signIn'} sx={{ mt: 2, mb: 2 }}>
+                            Sign In
+                        </Button>
+                    </ButtonGroup>
+                    {requestError.length !== 0 &&
+                        <Typography color={'error.main'} sx={{ml: 1}}>
+                            {requestError[0]}
+                        </Typography>}
                 </Box>
             </Box>
         </Container>

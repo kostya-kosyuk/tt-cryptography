@@ -9,7 +9,7 @@ export interface Message {
     updatedAt: Date;
 };
 
-export interface newMessage {
+export interface NewMessage {
     message: string;
     cipherMethod: cipherMethod;
     cipherKey: string;
