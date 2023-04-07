@@ -1,9 +1,9 @@
-type cipherMethod = 'xor' | 'caesar';
+export type CipherMethod = 'xor' | 'caesar';
 
 export interface Message {
     id: number;
     message: string;
-    cipherMethod: cipherMethod;
+    cipherMethod: CipherMethod;
     cipherKey: string;
     createdAt: Date;
     updatedAt: Date;
@@ -11,6 +11,6 @@ export interface Message {
 
 export interface NewMessage {
     message: string;
-    cipherMethod: cipherMethod;
+    cipherMethod: CipherMethod;
     cipherKey: string;
 }
