@@ -1,31 +1,18 @@
-import { Box, IconButton, Input, Modal, Typography } from "@mui/material";
-import { Message } from "../../types/Message";
+import { Box, IconButton, Input, Typography } from "@mui/material";
 import { MessageList } from "../MessageList/MessageList";
-import Clear from '@mui/icons-material/Clear'
 import SendIcon from '@mui/icons-material/Send'
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { CipherMethod } from '../../types/Message'
-import { useAppSelector } from "../../store/hooks";
 import { ChatModal } from "./ChatModal";
-
-const arr: Message[] = [];
-for (let i = 0; i < 10; i++) {
-    arr.push({
-        id: i,
-        message: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.Doloribus tenetur nemo sit reiciendis doloremque molestiae eius, consectetur sed deserunt dicta explicabo atque inventore illum, unde natus ad fugiat consequatur',
-        cipherMethod: 'caesar',
-        cipherKey: '12',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    });
-}
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getMessageAction } from "../../store/asyncActions.ts/messageAsyncActions";
+import { AnyAction } from "redux";
+import { ThunkDispatch } from "redux-thunk";
+import { RootState } from "../../store";
 
 export const Chat = () => {
-    const [messages, setMessages] = useState<Message[]>(arr);
-    // const messages = useAppSelector(state => state.messages.messages);
+    const dispatch: ThunkDispatch<RootState, null, AnyAction> = useAppDispatch();
+    const messages = useAppSelector(state => state.messages.messages);
     const [inputValue, setInputValue] = useState('');
-    const [cipherMethod, setCipherMethod] = useState<CipherMethod>('caesar');
-    const [cipherKey, setCipherKey] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const containerRef =  useRef<HTMLElement | null>(null);
@@ -37,6 +24,7 @@ export const Chat = () => {
     };
 
     useEffect(() => {
+        dispatch(getMessageAction());
         scrollToBottom();
     }, []);
 
@@ -56,7 +44,7 @@ export const Chat = () => {
         setIsModalOpen(prev => !prev);
     };
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
     };
 
@@ -70,6 +58,7 @@ export const Chat = () => {
         event.preventDefault();
         handleToggleModal();
     };
+
 
 
 
@@ -128,7 +117,7 @@ export const Chat = () => {
                                 type="submit"
                                 placeholder="Send a message..."
                                 value={inputValue}
-                                onChange={handleChange}
+                                onChange={handleChangeMessage}
                                 onKeyDown={(event) => handleKeyDown(event)}
                                 sx={{
                                     mb: 1,
@@ -142,7 +131,8 @@ export const Chat = () => {
                                     color: 'white',
                                     '& textarea': {
                                         padding: '4px, 0px, 0px',
-                                        pr: '30px'
+                                        pr: '30px',
+                                        overflow: 'hidden',
                                     }
                                 }}
                                 multiline
@@ -176,6 +166,7 @@ export const Chat = () => {
             <ChatModal
                 isModalOpen={isModalOpen}
                 handleToggleModal={handleToggleModal}
+                message={inputValue}
             />
         </>
     );

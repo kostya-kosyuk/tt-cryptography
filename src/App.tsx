@@ -40,7 +40,7 @@ function App() {
     <ThemeProvider theme={theme}>
       {login
         ? <Chat />
-        : <Chat />}
+        : <Auth />}
     </ThemeProvider>
   );
 }

@@ -9,6 +9,7 @@ type Props = {
 
 
 export const MessageList = ({messages}: Props) => {
+    console.log(messages);
     return (
         <List disablePadding sx={{
             zIndex: 1,
