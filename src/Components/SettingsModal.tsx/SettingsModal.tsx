@@ -160,9 +160,10 @@ export const SettingsModal = ({
 
         >
             <Box
-                width='400px'
+                maxWidth='400px'
                 boxShadow={2}
                 sx={{
+                    marginX: '10px',
                     'placeSelf': 'center',
                     color: 'white',
                     backgroundColor: 'rgba(32,33,35, 1)',
@@ -199,8 +200,9 @@ export const SettingsModal = ({
                 <Box
                     component="form"
                     noValidate
-                    width={'100%'}
+                    maxWidth={'100%'}
                     height={'100%'}
+                    padding= {'10px'}
                     onSubmit={(event) => handleFormSubmit(event)}
                     sx={{
                         display: 'flex',
@@ -231,14 +233,11 @@ export const SettingsModal = ({
                             </MenuItem>
                         </Select>
                     </FormControl>
-                    <Box
-                        sx={{
-                            maxWidth: '200px',
-                        }}
-                    >
+                    <Box>
                         <Box
                             sx={{
                                 position: 'relative',
+                                maxWidth: '180px',
                             }}
                         >
                             <Input

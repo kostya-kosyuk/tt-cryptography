@@ -73,7 +73,8 @@ export const Chat = () => {
                 <Box
                     component="form"
                     noValidate
-                    width={'750px'}
+                    maxWidth={'750px'}
+                    paddingX={'10px'}
                     margin={'auto'}
                     onSubmit={(event) => handleFormSubmit(event)}
                 >

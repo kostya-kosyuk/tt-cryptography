@@ -51,6 +51,8 @@ export const MessageItem = ({msg}: Props) => {
                 padding: 0,
                 pt: '16px',
                 pb: '16px',
+                display: 'flex',
+                justifyContent: 'center',
                 '&:nth-last-of-type(odd)': {
                     backgroundColor: '#444654',
                 }
@@ -60,32 +62,28 @@ export const MessageItem = ({msg}: Props) => {
                 sx={{
                     position: 'relative',
                     m: 'auto',
-                    width: '750px',
-                    pl: '10px',
-                    pr: '10px',
+                    maxWidth: '750px',
+                    width: '100%',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'start',
 
                     '&:hover div': {
                         opacity: 1,
-                        transform: 'translateX(0)',
+                        transform: 'translateX(-5px)',
                     },
                 }}
             >
-                <Box
-                    maxWidth={'700px'}
+                <Typography
+                    maxWidth={'calc(100% - 40px - 20px)'}
+                    sx={{
+                        color: '#d1d5db',
+                        overflowWrap: 'break-word',
+                        ml: '20px',
+                    }}
                 >
-                    <Typography
-                        sx={{
-                            color: '#d1d5db',
-                            overflowWrap: 'break-word',
-                            ml: '20px',
-                        }}
-                    >
-                        {visibleContent}
-                    </Typography>
-                </Box>
+                    {visibleContent}
+                </Typography>
                 <Box
                     sx={{
                         display: 'flex',
