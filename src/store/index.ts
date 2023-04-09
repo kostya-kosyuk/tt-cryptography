@@ -2,10 +2,12 @@ import { applyMiddleware, combineReducers, legacy_createStore as createStore } f
 import { authReducer } from './reducers/authReducer';
 import thunk from 'redux-thunk';
 import { messagesReducer } from './reducers/messageReducer';
+import { currentMessageReducer } from './reducers/currentMessageReducer';
 
 const rootReducer = combineReducers({
     auth: authReducer,
-    messages: messagesReducer
+    messages: messagesReducer,
+    currentMessage: currentMessageReducer
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));

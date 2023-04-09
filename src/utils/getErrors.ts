@@ -1,5 +1,6 @@
 const getErrors = (error: any) => {
     const errorMsg = [];
+
     if (error['errors']) {
         const messages = error.errors.errors.map((err: { msg: string; }) => {
             return err.msg;

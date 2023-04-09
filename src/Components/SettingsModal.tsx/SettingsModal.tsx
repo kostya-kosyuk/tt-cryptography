@@ -1,22 +1,21 @@
 import { Clear } from "@mui/icons-material";
-import { Modal, Box, Typography, IconButton, FormControl, InputLabel, MenuItem, Select, Input, Button, SelectChangeEvent } from "@mui/material";
+import { Modal, Box, Typography, IconButton, FormControl, InputLabel, MenuItem, Select, Input, SelectChangeEvent } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import * as Yup from "yup";
 import { CipherMethod, NewMessage } from "../../types/Message";
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { AnyAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { RootState } from "../../store";
-import { useAppDispatch } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { patchMessageAction, postMessageAction } from "../../store/asyncActions.ts/messageAsyncActions";
+import { CurrentMessageActionTypes } from "../../store/actions/currentMessageAction";
+import { decrypt, encrypt } from "../../utils/cryptoMethods";
+import { checkMessage } from "../../utils/regExp";
+import { SetMessageErrorActionTypes } from "../../store/actions/messageActions.ts/setMessageErrorActions";
 
 type Props = {
     isModalOpen: boolean,
-    handleToggleModal: () => void,
-    id?: number,
-    message: string,
-    oldCipherKey?: string,
-    oldCipherMethod?: CipherMethod,
 };
 
 const xorKeyValidationSchema = Yup.object().shape({
@@ -34,17 +33,28 @@ const caesarKeyValidationSchema = Yup.object().shape({
         .max(32, "Caesar key must be between number 1 and 32")
 });
 
-export const ChatModal = ({
-    isModalOpen,
-    id,
-    message,
-    handleToggleModal,
-    oldCipherKey,
-    oldCipherMethod
+export const SettingsModal = ({
+    isModalOpen
 }: Props) => {
     const dispatch: ThunkDispatch<RootState, null, AnyAction> = useAppDispatch();
-    const [cipherKey, setCipherKey] = useState(oldCipherKey ? oldCipherKey : '');
-    const [cipherMethod, setCipherMethod] = useState<CipherMethod>(oldCipherMethod ? oldCipherMethod : 'caesar');
+
+    const currentMessage = useAppSelector(state => state.currentMessage.message);
+
+    const [cipherKey, setCipherKey] = useState('');
+    const [cipherMethod, setCipherMethod] = useState<CipherMethod>('caesar');
+
+    const handleCloseModal = () => dispatch({
+        type: CurrentMessageActionTypes.CLEAR_MESSAGE,
+    });
+
+    useEffect(() => {
+        if (currentMessage?.cipherKey) {
+            setCipherKey(currentMessage.cipherKey);
+        }
+        if (currentMessage?.cipherMethod) {
+            setCipherMethod(currentMessage.cipherMethod);
+        }
+    }, [currentMessage]);
 
     const validationError = useMemo(() => {
         const schema = cipherMethod === 'caesar' ? caesarKeyValidationSchema : xorKeyValidationSchema;
@@ -70,22 +80,47 @@ export const ChatModal = ({
     const handleFormSubmit = (event: any) => {
         event.preventDefault();
 
-        if (validationError !== null) {
+        if (validationError !== null || !currentMessage) {
+            return;
+        }
+
+        try {
+            checkMessage(currentMessage.message);
+        } catch (err: any) {
+            dispatch({
+                type: SetMessageErrorActionTypes.SET_MESSAGE_ERROR,
+                payload: {
+                    error: err.message
+                }
+            });
+            handleCloseModal();
             return;
         }
 
         const newMsg: NewMessage = {
-            message,
+            message: currentMessage.message,
             cipherMethod,
             cipherKey
         };
 
-        if (id) {
-            dispatch(patchMessageAction(id, newMsg));
+        //if message id exists then message exist, and it will be patched. If no id, then we need to create message :)
+        if (currentMessage.id) {
+            const decryptedMessage = decrypt(currentMessage.cipherMethod, currentMessage.message, currentMessage.cipherKey);
 
+            const newEncryptedMessage = encrypt(newMsg.cipherMethod, decryptedMessage, newMsg.cipherKey);
+
+            newMsg.message = newEncryptedMessage;
+
+            dispatch(patchMessageAction(currentMessage.id, newMsg));
         } else {
+            const encryptedMessage = encrypt(newMsg.cipherMethod, newMsg.message, newMsg.cipherKey);
+
+            newMsg.message = encryptedMessage;
+
             dispatch(postMessageAction(newMsg));
         }
+
+        handleCloseModal();
     };
 
     const handleChangeKey = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -113,12 +148,12 @@ export const ChatModal = ({
     return(
         <Modal
             open={isModalOpen}
-            onClose={handleToggleModal}
+            onClose={handleCloseModal}
             aria-labelledby="parent-modal-title"
             aria-describedby="parent-modal-description"
             sx={{
                 display: 'grid',
-                '& > div:first-child': {
+                '& > div:first-of-type': {
                     backgroundColor: 'rgba(52,53,65,.9)',
                 },
             }}
@@ -152,7 +187,7 @@ export const ChatModal = ({
                         Message settings
                     </Typography>
                     <IconButton
-                        onClick={handleToggleModal}
+                        onClick={handleCloseModal}
                         sx={{
                             color: 'rgba(255, 255, 255, 0.54)',
                             padding: 0,
@@ -169,7 +204,7 @@ export const ChatModal = ({
                     onSubmit={(event) => handleFormSubmit(event)}
                     sx={{
                         display: 'flex',
-                        justifyContent: 'center',
+                        justifyContent: 'space-evenly',
                         alignItems: 'center',
                     }}
                 >
@@ -260,23 +295,6 @@ export const ChatModal = ({
                                 </Typography>
                             )}
                     </Box>
-            </Box>
-            <Box
-                width={'100%'}
-                display={'grid'}
-            >
-                <Button
-                    sx={{
-                        color: 'white',
-                        placeSelf: 'center',
-                        minWidth: '100px',
-                        marginBottom: '8px',
-                        backgroundColor: 'rgba(144, 202, 249, 0.04)',
-                    }}
-                    type="submit"
-                >
-                    Save
-                </Button>
             </Box>
             </Box>
         </Modal>

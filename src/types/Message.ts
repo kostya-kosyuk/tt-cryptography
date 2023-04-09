@@ -10,6 +10,7 @@ export interface Message {
 };
 
 export interface NewMessage {
+    id?: number;
     message: string;
     cipherMethod: CipherMethod;
     cipherKey: string;

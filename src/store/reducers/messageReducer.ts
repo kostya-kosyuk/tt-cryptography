@@ -4,6 +4,7 @@ import { DeleteMessageActionTypes } from "../actions/messageActions.ts/deleteMes
 import { GetMessageActionTypes } from "../actions/messageActions.ts/getMessageActions";
 import { PatchMessageActionTypes } from "../actions/messageActions.ts/patchMessageActions";
 import { PostMessageActionTypes } from "../actions/messageActions.ts/postMessageActions";
+import { SetMessageErrorActionTypes } from "../actions/messageActions.ts/setMessageErrorActions";
 
 type MessageState = {
     isLoading: boolean,
@@ -21,7 +22,6 @@ export const messagesReducer = (
     state: MessageState = initialState,
     action: MessageAction
 ): MessageState => {
-    const {payload} = action;
         switch (action.type) {
             case GetMessageActionTypes.GET_MESSAGE_REQUEST:
                 return {
@@ -31,7 +31,7 @@ export const messagesReducer = (
             case GetMessageActionTypes.GET_MESSAGE_SUCCESS:
                 return {
                     ...state,
-                    isLoading: payload.isLoading,
+                    isLoading: action.payload.isLoading,
                     messages: action.payload.messages,
                     errorMsg: []
                 };
@@ -49,7 +49,7 @@ export const messagesReducer = (
             case PostMessageActionTypes.POST_MESSAGE_SUCCESS:
                 return {
                     ...state,
-                    isLoading: payload.isLoading,
+                    isLoading: action.payload.isLoading,
                     messages: [...state.messages, action.payload.message],
                     errorMsg: []
                 };
@@ -74,7 +74,7 @@ export const messagesReducer = (
 
                 return {
                     ...state,
-                    isLoading: payload.isLoading,
+                    isLoading: action.payload.isLoading,
                     messages: newMessages,
                     errorMsg: []
                 };
@@ -92,7 +92,7 @@ export const messagesReducer = (
             case DeleteMessageActionTypes.DELETE_MESSAGE_SUCCESS:
                 return {
                     ...state,
-                    isLoading: payload.isLoading,
+                    isLoading: action.payload.isLoading,
                     messages: state.messages.filter(({id}) => id !== action.payload.id),
                     errorMsg: []
                 };
@@ -100,6 +100,11 @@ export const messagesReducer = (
                 return {
                     ...state,
                     ...action.payload,
+                };
+            case SetMessageErrorActionTypes.SET_MESSAGE_ERROR:
+                return {
+                    ...state,
+                    errorMsg: [action.payload.error]
                 };
             default:
                 return state;

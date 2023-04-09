@@ -7,6 +7,8 @@ import { useAppDispatch, useAppSelector } from './store/hooks';
 import { AuthActionTypes } from './store/actions/authAction';
 import getCookie from './utils/getCookie';
 import { Chat } from './Components/Chat/Chat';
+import { useMemo } from 'react';
+import { SettingsModal } from './Components/SettingsModal.tsx/SettingsModal';
 
 function App() {
   const dispatch: ThunkDispatch<RootState, null, AnyAction> = useAppDispatch();
@@ -20,6 +22,9 @@ function App() {
       },
     },
   });
+
+  const currentMessage = useAppSelector(state => state.currentMessage.message);
+  const isModalOpen = useMemo(() => Boolean(currentMessage),[currentMessage]);
 
   const login = useAppSelector(state => state.auth.login)
 
@@ -41,6 +46,10 @@ function App() {
       {login
         ? <Chat />
         : <Auth />}
+
+      <SettingsModal
+        isModalOpen={isModalOpen}
+      />
     </ThemeProvider>
   );
 }

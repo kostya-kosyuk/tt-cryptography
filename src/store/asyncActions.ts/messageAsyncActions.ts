@@ -7,6 +7,7 @@ import { PostMessageAction, PostMessageActionTypes } from "../actions/messageAct
 import { NewMessage } from "../../types/Message";
 import { PatchMessageAction, PatchMessageActionTypes } from "../actions/messageActions.ts/patchMessageActions";
 import { DeleteMessageAction, DeleteMessageActionTypes } from "../actions/messageActions.ts/deleteMessageActions";
+import { checkMessage } from "../../utils/regExp";
 
 export const getMessageAction = (): ThunkAction<
     void,
