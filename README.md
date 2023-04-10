@@ -1,6 +1,32 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Message Encrypter
+
+## Description
+
+Encrypt your secret message and store it on the server!
+
+## Screenshots
+
+![Auth](https://user-images.githubusercontent.com/80011474/230906518-69857715-7c85-4204-a3c6-81d0efbe7d6f.png)
+![Chat](https://user-images.githubusercontent.com/80011474/230906602-5d9f659c-9c3b-4088-ab80-7cedee4f5ba0.png)
+![Message Settings](https://user-images.githubusercontent.com/80011474/230909119-02856964-cc4a-46e3-8d46-14b43e216a2f.png)
+![Message Item](https://user-images.githubusercontent.com/80011474/230909161-c5359305-7b39-4d57-afb0-528446c81b49.png)
+![Moobile Version](https://user-images.githubusercontent.com/80011474/230909276-4c9d3032-498a-4892-9f87-85ee403e7ab5.png)
+
+## Technologies Used
+
+ - React.js
+ - MUI
+ - Redux
+ - TypeScript
+ - crypto-xor
+ - xcaesar
+ - Yup
+
+## BackEnd Project
+
+I have some backend for this project :)
+[link]
 
 ## Available Scripts
 
@@ -9,7 +35,8 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000) to view it in the browser.
+(localhost doesn't work with CORS)
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
@@ -26,21 +53,3 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
