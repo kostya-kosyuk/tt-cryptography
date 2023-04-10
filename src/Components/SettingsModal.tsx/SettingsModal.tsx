@@ -214,16 +214,24 @@ export const SettingsModal = ({
                         sx={{
                             m: 1,
                             minWidth: 120,
-                            color: 'white',
+                            borderColor: 'white',
+                            '& fieldset': {
+                                borderColor: 'rgba(64,65,79, 1)',
+                            }
                         }}
                     >
-                        <InputLabel>Method</InputLabel>
+                        <InputLabel
+                            sx={{
+                                color: 'white',
+                            }}>Method *</InputLabel>
                         <Select
-                            id="demo-simple-select-required"
                             value={cipherMethod}
                             label="Method *"
                             required
                             onChange={(event) => handleChangeMethod(event)}
+                            sx={{
+                                color: 'white',
+                            }}
                         >
                             <MenuItem value="caesar">
                                 Caesar
