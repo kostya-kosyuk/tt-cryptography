@@ -7,51 +7,29 @@ import { useAppDispatch, useAppSelector } from './store/hooks';
 import { AuthActionTypes } from './store/actions/authAction';
 import getCookie from './utils/getCookie';
 import { Chat } from './Components/Chat/Chat';
-import { useMemo } from 'react';
-import { SettingsModal } from './Components/SettingsModal.tsx/SettingsModal';
+import { useEffect } from 'react';
 
 function App() {
   const dispatch: ThunkDispatch<RootState, null, AnyAction> = useAppDispatch();
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#2196f3',
-      },
-      secondary: {
-        main: '#f50057',
-      },
-    },
-  });
-
-  const currentMessage = useAppSelector(state => state.currentMessage.message);
-  const isModalOpen = useMemo(() => Boolean(currentMessage),[currentMessage]);
 
   const login = useAppSelector(state => state.auth.login)
 
-  if (login === '') {
-    const loginFromCookie = getCookie('login');
+  useEffect(() =>{
+    if (login === '') {
+      const loginFromCookie = getCookie('login');
 
-    if (loginFromCookie) {
-      dispatch({
-        type: AuthActionTypes.SET_LOGIN,
-        payload: {
-          login: decodeURIComponent(loginFromCookie),
-      },
-      });
+      if (loginFromCookie) {
+        dispatch({
+          type: AuthActionTypes.SET_LOGIN,
+          payload: {
+            login: decodeURIComponent(loginFromCookie),
+          },
+        });
+      }
     }
-  }
+  }, []);
 
-  return (
-    <ThemeProvider theme={theme}>
-      {login
-        ? <Chat />
-        : <Auth />}
-
-      <SettingsModal
-        isModalOpen={isModalOpen}
-      />
-    </ThemeProvider>
-  );
+  return login !== '' ? <Chat /> : <Auth />;
 }
 
 export default App;

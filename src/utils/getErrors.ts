@@ -13,7 +13,16 @@ const getErrors = (error: any) => {
         }
     }
 
-    return errorMsg;
+    const result = errorMsg.map(msg => {
+        switch (msg) {
+            case 'Failed to fetch':
+                return 'Server is unavailable'
+            default:
+                return msg;
+        }
+    })
+
+    return result;
 };
 
 export default getErrors;

@@ -51,6 +51,25 @@ export const MessageList = ({messages}: Props) => {
                     borderRadius: '999px'
                 }
         }}>
+            <Box
+                sx={{
+                    position: 'relative',
+                    height: '50px',
+                    '&:nth-last-of-type(even) ::after': {
+                        content: '""',
+                        position: 'absolute',
+                        display: 'inline-block',
+                        width: '100vw',
+                        height: '100%',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        backgroundColor: '#444654',
+                        zIndex: -1
+                    }
+                }}
+            >
+            </Box>
             {messages.map(msg => <MessageItem key={msg.id} msg={msg} />)}
             <Box
                 sx={{

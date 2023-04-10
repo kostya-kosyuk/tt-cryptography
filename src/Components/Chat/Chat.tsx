@@ -1,7 +1,7 @@
-import { Box, IconButton, Input, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Input, Typography } from "@mui/material";
 import MessageList from "../MessageList/MessageList";
 import SendIcon from '@mui/icons-material/Send'
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getMessageAction } from "../../store/asyncActions.ts/messageAsyncActions";
 import { AnyAction } from "redux";
@@ -9,15 +9,34 @@ import { ThunkDispatch } from "redux-thunk";
 import { RootState } from "../../store";
 import { CurrentMessageActionTypes } from "../../store/actions/currentMessageAction";
 
+import { AccountCircle, RestartAlt } from '@mui/icons-material';
+import { logoutAction } from "../../store/asyncActions.ts/authAsyncAction";
+import { SettingsModal } from "../SettingsModal.tsx/SettingsModal";
+import { Information } from "../Information/Information";
+
 export const Chat = () => {
     const dispatch: ThunkDispatch<RootState, null, AnyAction> = useAppDispatch();
     const messages = useAppSelector(state => state.messages.messages);
     const error = useAppSelector(state => state.messages.errorMsg);
     const [inputValue, setInputValue] = useState('');
+    const login = useAppSelector(state => state.auth.login);
+    const isLoading = useAppSelector(state => state.messages.isLoading);
+
+    const currentMessage = useAppSelector(state => state.currentMessage.message);
+
+    const isModalOpen = useMemo<boolean>(() => Boolean(currentMessage), [currentMessage]);
+
+    const handleLogOut = () => {
+        dispatch(logoutAction());
+    };
 
     useEffect(() => {
-        dispatch(getMessageAction());
+        handleGetMessages();
     }, []);
+
+    const handleGetMessages = () => {
+        dispatch(getMessageAction());
+    };
 
     const handleChangeMessage = (event: ChangeEvent<HTMLInputElement>) => {
         setInputValue(event.target.value);
@@ -47,6 +66,82 @@ export const Chat = () => {
     return (
         <>
             <Box
+                width={'100vw'}
+                minHeight={'80px'}
+                zIndex={3}
+                sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    backgroundImage: 'linear-gradient(0deg,rgba(53,55,64,0), #353740 50%)',
+                }}
+            >
+                <Box
+                    maxWidth={'720px'}
+                    margin={'auto'}
+                    paddingX={'15px'}
+                    sx={{
+                        mt: '10px',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <AccountCircle
+                            fontSize="large"
+                            sx={{
+                                color: 'white',
+                                mr: '10px'
+                            }}
+                        />
+                        <Typography
+                            sx={{
+                                color: 'white',
+                            }}
+                        >
+                            {login}
+                        </Typography>
+                    </Box>
+                    {isLoading &&
+                        <CircularProgress
+                            size={30}
+                            sx={{
+                                color: 'lightgray',
+                            }}
+                        />}
+                    {(!isLoading && error.length !== 0 && messages.length === 0) &&
+                        <IconButton
+                            onClick={handleGetMessages}
+                            sx={{
+                                height: '35px',
+                                width: '35px',
+                            }}
+                        >
+                            <RestartAlt
+                                sx={{
+                                    color: 'lightgray',
+                                }}
+                            />
+                        </IconButton>}
+                    <Button
+                        onClick={handleLogOut}
+                        sx={{
+                            color: 'lightgray',
+                        }}
+                    >
+                        Log Out
+                    </Button>
+                </Box>
+            </Box>
+            <Box
                 sx={{
                 width: '100vw',
                 height: '100vh',
@@ -57,8 +152,8 @@ export const Chat = () => {
                 justifyContent: 'end',
             }}>
                 {messages.length !== 0
-                    && <MessageList messages={messages} />}
-
+                    ? <MessageList messages={messages} />
+                    : <Information />}
             </Box>
             <Box
                 width={'100vw'}
@@ -145,6 +240,9 @@ export const Chat = () => {
                     </Typography>
                 </Box>
             </Box>
+            <SettingsModal
+                isModalOpen={isModalOpen}
+            />
         </>
     );
 };

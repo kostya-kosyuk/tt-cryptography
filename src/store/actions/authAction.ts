@@ -3,6 +3,7 @@ export enum AuthActionTypes {
     FETCH_AUTH_SUCCESS = "FETCH_AUTH_SUCCESS",
     FETCH_AUTH_FAILURE = "FETCH_AUTH_FAILURE",
     SET_LOGIN = "SET_LOGIN",
+    LOG_OUT = "LOG_OUT",
 }
 
 interface FetchAuthRequestAction {
@@ -37,8 +38,18 @@ interface SetLoginAction {
     }
 }
 
+interface LogOutAction {
+    type: AuthActionTypes.LOG_OUT;
+    payload: {
+        isLoading: boolean;
+        login: string;
+        errorMsg: string[];
+    }
+}
+
 export type AuthAction =
     | FetchAuthRequestAction
     | FetchAuthSuccessAction
     | FetchAuthFailureAction
-    | SetLoginAction;
+    | SetLoginAction
+    | LogOutAction;

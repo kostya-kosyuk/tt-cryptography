@@ -1,4 +1,4 @@
-import { Container, Box, Typography, TextField, Button, ButtonGroup } from "@mui/material";
+import { Container, Box, Typography, TextField, Button, ButtonGroup, CircularProgress } from "@mui/material";
 import { AnyAction } from "redux";
 import { ThunkDispatch } from "redux-thunk";
 import { RootState } from "../../store";
@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { loginAction, registerAction } from "../../store/asyncActions.ts/authAsyncAction";
 import { FormEvent, useMemo, useState } from "react";
 import * as Yup from "yup";
+import { AccountCircle } from "@mui/icons-material";
 
 const loginValidationSchema = Yup.object().shape({
     login: Yup.string()
@@ -24,6 +25,8 @@ const passwordValidationSchema = Yup.object().shape({
 
 const Auth = () => {
     const dispatch: ThunkDispatch<RootState, null, AnyAction> = useAppDispatch();
+
+    const isLoading = useAppSelector(state => state.auth.isLoading);
 
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
@@ -101,6 +104,7 @@ const Auth = () => {
             }}
         >
             <Box
+                maxHeight={'50px'}
                 sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -108,10 +112,40 @@ const Auth = () => {
                     alignItems: "center",
                 }}
             >
+                <Box
+                    sx={{
+                        position: 'relative',
+                    }}
+                >
+                    <AccountCircle
+                        sx={{
+                            fontSize: "50px",
+                        }}
+                    />
+                    {isLoading &&
+                        <CircularProgress
+                            size={55}
+                            sx={{
+                                color: 'light-blue',
+                                position: 'absolute',
+                                top: -3,
+                                left: -2,
+                                zIndex: 1,
+                            }}
+                        />}
+                </Box>
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <Box component="form" onSubmit={handleFormSubmit} noValidate sx={{ mt: 1 }}>
+                <Box
+                    component="form"
+                    onSubmit={handleFormSubmit}
+                    noValidate
+                    sx={{
+                        position: 'relative',
+                        mt: 1
+                    }}
+                >
                     <TextField
                         margin="normal"
                         required
@@ -154,7 +188,14 @@ const Auth = () => {
                         </Button>
                     </ButtonGroup>
                     {requestError.length !== 0 &&
-                        <Typography color={'error.main'} sx={{ml: 1}}>
+                        <Typography
+                            color={'error.main'}
+                            sx={{
+                                position: 'absolute',
+                                bottom: -12,
+                                ml: 1
+                            }}
+                        >
                             {requestError[0]}
                         </Typography>}
                 </Box>
